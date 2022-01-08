@@ -10,7 +10,12 @@ from bs4 import BeautifulSoup
 urlBaza = 'https://www.alexa.com/topsites/countries'
 urlSit = 'https://www.'
 cale = 'E:\\info\\PP\\Date\\'
-logging.basicConfig(filename='master.log', filemode='w', format='%(asctime) - %(name): %(message)')
+
+logger = logging.getLogger("Petru")
+handler = logging.FileHandler(filename='master.log', mode='a')
+handler.setFormatter(logging.Formatter('%(asctime)s - %(name)s: %(message)s'))
+logger.addHandler(handler)
+logger.setLevel(logging.DEBUG)
 
 raspuns = requests.get(urlBaza)
 parseaza = BeautifulSoup(raspuns.text, 'html.parser')
@@ -26,33 +31,37 @@ for tag in listaTaguri:
 
 for tara in listaTari:
 
-    paginaTara = requests.get(urlBaza + tara, timeout=5)
+    try:
+        paginaTara = requests.get(urlBaza + tara, timeout=5)
 
-    if paginaTara.ok:
-        parseaza = BeautifulSoup(paginaTara.text, 'html.parser')
+        if paginaTara.ok:
+            parseaza = BeautifulSoup(paginaTara.text, 'html.parser')
 
-        listaSituri = parseaza.select('div > p > a')
+            listaSituri = parseaza.select('div > p > a')
 
-        adresa = cale + tara[1:]  # print(tara)
-        dictionar = {}
+            adresa = cale + tara[1:]  # print(tara)
+            dictionar = {}
 
-        for sit in listaSituri:
-            dictionar['web'] = (urlSit + sit.get('href').removeprefix('/siteinfo/'))
-            dictionar['local'] = adresa
+            for sit in listaSituri:
+                dictionar['web'] = (urlSit + sit.get('href').removeprefix('/siteinfo/'))
+                dictionar['local'] = adresa
 
-            dePusInCoada = json.dumps(dictionar)
-            coada.basic_publish(exchange='', routing_key='principal', body=dePusInCoada)
+                dePusInCoada = json.dumps(dictionar)
+                coada.basic_publish(exchange='', routing_key='principal', body=dePusInCoada.encode('utf-8'))
 
-        logging.info('Am adaugat in coada siturile de la tara: ' + tara)
-    else:
+            logger.info('Am adaugat in coada siturile de la tara: ' + tara)
+
+            break
+
+    except:
         mesajEroare = 'Eroare la tara: ' + tara
-        logging.info(mesajEroare)
+        logger.info(mesajEroare)
+
+conexiune.close()
 
 procese = []
-for proces in range(len(listaTari)):
+for proces in range(1):
     procese.append(subprocess.Popen([sys.executable, 'worker.py']))
 
 for proces in procese:
     proces.wait()
-
-conexiune.close()
