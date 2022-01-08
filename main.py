@@ -15,6 +15,7 @@ logger = logging.getLogger("Petru")
 handler = logging.FileHandler(filename='master.log', mode='a')
 handler.setFormatter(logging.Formatter('%(asctime)s - %(name)s: %(message)s'))
 logger.addHandler(handler)
+logger.addHandler(logging.StreamHandler(sys.stdout))
 logger.setLevel(logging.DEBUG)
 
 raspuns = requests.get(urlBaza)
@@ -51,8 +52,6 @@ for tara in listaTari:
 
             logger.info('Am adaugat in coada siturile de la tara: ' + tara)
 
-            break
-
     except:
         mesajEroare = 'Eroare la tara: ' + tara
         logger.info(mesajEroare)
@@ -60,7 +59,7 @@ for tara in listaTari:
 conexiune.close()
 
 procese = []
-for proces in range(1):
+for proces in range(len(listaTari)//2):
     procese.append(subprocess.Popen([sys.executable, 'worker.py']))
 
 for proces in procese:
