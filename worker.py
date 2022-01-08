@@ -23,7 +23,7 @@ def verif(path):
     except:
         print()
 
-for i in range(100):
+for i in range(200):
     body = coada.basic_get(queue='principal')
     date = json.loads(body[2].decode('utf-8'))
 

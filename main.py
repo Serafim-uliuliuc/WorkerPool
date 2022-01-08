@@ -59,7 +59,7 @@ for tara in listaTari:
 conexiune.close()
 
 procese = []
-for proces in range(len(listaTari)//2):
+for proces in range(len(listaTari)//4):
     procese.append(subprocess.Popen([sys.executable, 'worker.py']))
 
 for proces in procese:
