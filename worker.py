@@ -11,4 +11,7 @@ def run(ch, method, properties, body):
     fisier.write(pagina.text)
     fisier.close()
 
+for i in range(50):
+
+
 conexiune.close()

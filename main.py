@@ -1,5 +1,6 @@
 import json, requests, multiprocessing, pika
 from bs4 import BeautifulSoup
+import subprocess, sys
 
 urlBaza = 'https://www.alexa.com/topsites/countries'
 urlSit = 'https://www.'
@@ -37,5 +38,13 @@ for tara in listaTari:
         dePusInCoada=json.dumps(dictionar)
         # coada.basic_publish(exchange='',routing_key='principal',body=dePusInCoada)
         print(dePusInCoada)
+
+
+procese = []
+for proces in range(len(listaTari)):
+    procese.append(subprocess.Popen([sys.executable, 'worker.py']))
+
+for proces in procese:
+    proces.wait()
 
 # conexiune.close()
