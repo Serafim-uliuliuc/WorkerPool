@@ -17,6 +17,11 @@ coada.queue_declare(queue='principal')
 coada.basic_qos(prefetch_count=1)
 
 def verif(path):
+    """
+
+    :param path: calea catre un director
+    :return: creeaza directorul daca acesta nu exista
+    """
     try:
         if not os.path.exists(path):
             os.makedirs(path)
